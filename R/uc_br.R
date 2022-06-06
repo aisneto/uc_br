@@ -2,16 +2,16 @@
 ########################################### Desenvolvido por aisneto #############################################
 
 
-#Cria diretorio temporario e faz download do shapefile
+#cria diretorio temporario e faz download do shapefile
 download.data <- function(url, exdir=tempdir(), file=tempfile()) {
   download.file(url,destfile = file)
   unzip(file, exdir = exdir)
 }
 
-# Lista as unidades de conservação de acordo com o ID
+#lista as unidades de conservação de acordo com o ID
 list.uc <- function(exdir=tempdir()) {
   if (file.exists(paste(exdir,"\\GEOFT_UNIDADE_CONSERVACAO.shp", sep = "")) == F) { #verifica & baixa os dados
-    uc_br <- download.data("https://metadados.snirh.gov.br/geonetwork/srv/api/records/9407d38f-84d2-48ea-97dd-ee152c493043/attachments/GEOFT_UNIDADE_CONSERVACAO.zip")
+    download.data("https://metadados.snirh.gov.br/geonetwork/srv/api/records/9407d38f-84d2-48ea-97dd-ee152c493043/attachments/GEOFT_UNIDADE_CONSERVACAO.zip")
   }
   uc_br <- sf::st_read(paste(exdir,"\\GEOFT_UNIDADE_CONSERVACAO.shp", sep = ""))
   a <- data.frame(uc_br$NOME_UC1, uc_br$ID_UC0)
@@ -19,12 +19,23 @@ list.uc <- function(exdir=tempdir()) {
   print(a)
 }
 
-# Acessa o smart object com base no id
-read.uc <- function(id, exdir=tempdir()) {
+#acessa o smart object com base no id
+read.uc <- function(id, var = "area", exdir=tempdir()) {
   if (file.exists(paste(exdir,"\\GEOFT_UNIDADE_CONSERVACAO.shp", sep = "")) == F) { #verifica & baixa os dados
-    uc_br <- download.data("https://metadados.snirh.gov.br/geonetwork/srv/api/records/9407d38f-84d2-48ea-97dd-ee152c493043/attachments/GEOFT_UNIDADE_CONSERVACAO.zip")
+    download.data("https://metadados.snirh.gov.br/geonetwork/srv/api/records/9407d38f-84d2-48ea-97dd-ee152c493043/attachments/GEOFT_UNIDADE_CONSERVACAO.zip")
   }
-  uc_br <- sf::st_read(paste(exdir,"\\GEOFT_UNIDADE_CONSERVACAO.shp", sep = ""))
-  uc_br$geometry[uc_br$ID_UC0 == id ]
-}
-
+  if (var== "area") {
+  uc <- sf::st_read(paste(exdir,"\\GEOFT_UNIDADE_CONSERVACAO.shp", sep = "")) #le o shapefile das unidades de conservação brasil
+  uc$geometry[uc$ID_UC0 == id ] #retorna o shapefile do id correspondente
+  }
+  if (var=="veg"){
+    if (file.exists(paste(exdir, "\\vege_area\\vege_area.shp", sep="")) == F ) { #verifica & baixa os dados
+      download.data("https://geoftp.ibge.gov.br/informacoes_ambientais/vegetacao/vetores/escala_250_mil/versao_2021/vege_area.zip")
+    }
+    uc <- sf::st_read(paste(exdir,"\\GEOFT_UNIDADE_CONSERVACAO.shp", sep = "")) #lê o shapefile das uc's brasil
+    uc <- uc$geometry[uc$ID_UC0 == id ] #carrega o shapefile do id correspondente
+    vg <- sf::st_read(paste(exdir, "\\vege_area\\vege_area.shp", sep="")) #lê o shapefile de vegetação brasil
+    sf::sf_use_s2(FALSE) #parâmetro para não dar erro na interseção
+    int <- sf::st_intersection(vg, uc) #intersecciona os shapefiles
+    int[22] #retorna a coluna de legenda
+  }}
