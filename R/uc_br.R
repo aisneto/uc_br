@@ -45,9 +45,22 @@ read.uc <- function(id, var = "area") {
     }
     uc <- sf::st_read(paste(tempdir(),"\\GEOFT_UNIDADE_CONSERVACAO.shp", sep = "")) #lê o shapefile das uc's brasil
     uc <- uc$geometry[uc$ID_UC0 == id ] #carrega o shapefile do id correspondente
-    pd <- sf::st_read(paste(tempdir(), "\\pedo_area.shp", sep="")) #lê o shapefile de vegetação brasil
+    pd <- sf::st_read(paste(tempdir(), "\\pedo_area.shp", sep="")) #lê o shapefile de pedologia brasil
     sf::sf_use_s2(FALSE) #parâmetro para não dar erro na interseção
     int <- sf::st_intersection(pd, uc) #intersecciona os shapefiles
     return(int[6]) #retorna a coluna de legenda
   }
+  if (var=="geomor"){
+    if (file.exists(paste(tempdir(), "\\geom_area.shp", sep="")) == F ) { #verifica & baixa os dados
+      download.data("https://geoftp.ibge.gov.br/informacoes_ambientais/geomorfologia/vetores/escala_250_mil/versao_2021/geom_area.zip")
+    }
+    uc <- sf::st_read(paste(tempdir(),"\\GEOFT_UNIDADE_CONSERVACAO.shp", sep = "")) #lê o shapefile das uc's brasil
+    uc <- uc$geometry[uc$ID_UC0 == id ] #carrega o shapefile do id correspondente
+    geo <- sf::st_read(paste(tempdir(), "\\geom_area.shp", sep="")) #lê o shapefile de geomorfologia brasil
+    sf::sf_use_s2(FALSE) #parâmetro para não dar erro na interseção
+    int <- sf::st_intersection(geo, uc) #intersecciona os shapefiles
+    return(int[18]) #retorna a coluna de legenda
+  }
 }
+
+
