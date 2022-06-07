@@ -26,7 +26,7 @@ read.uc <- function(id, var = "area", exdir=tempdir()) {
   }
   if (var== "area") {
   uc <- sf::st_read(paste(exdir,"\\GEOFT_UNIDADE_CONSERVACAO.shp", sep = "")) #le o shapefile das unidades de conservação brasil
-  uc$geometry[uc$ID_UC0 == id ] #retorna o shapefile do id correspondente
+  return(uc$geometry[uc$ID_UC0 == id]) #retorna o shapefile do id correspondente
   }
   if (var=="veg"){
     if (file.exists(paste(exdir, "\\vege_area\\vege_area.shp", sep="")) == F ) { #verifica & baixa os dados
@@ -37,5 +37,5 @@ read.uc <- function(id, var = "area", exdir=tempdir()) {
     vg <- sf::st_read(paste(exdir, "\\vege_area\\vege_area.shp", sep="")) #lê o shapefile de vegetação brasil
     sf::sf_use_s2(FALSE) #parâmetro para não dar erro na interseção
     int <- sf::st_intersection(vg, uc) #intersecciona os shapefiles
-    int[22] #retorna a coluna de legenda
+    return(int[22]) #retorna a coluna de legenda
   }}
