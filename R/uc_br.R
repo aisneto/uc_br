@@ -50,7 +50,7 @@ read.uc <- function(id, var = "area") {
     int <- sf::st_intersection(pd, uc) #intersecciona os shapefiles
     return(int[6]) #retorna a coluna de legenda
   }
-  if (var=="geomor"){
+  if (var=="geom"){
     if (file.exists(paste(tempdir(), "\\geom_area.shp", sep="")) == F ) { #verifica & baixa os dados
       download.data("https://geoftp.ibge.gov.br/informacoes_ambientais/geomorfologia/vetores/escala_250_mil/versao_2021/geom_area.zip")
     }
@@ -62,5 +62,3 @@ read.uc <- function(id, var = "area") {
     return(int[18]) #retorna a coluna de legenda
   }
 }
-
-
