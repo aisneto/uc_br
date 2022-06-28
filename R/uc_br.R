@@ -27,11 +27,17 @@ read.uc <-  function(id, var){
             veg = file.path(tempdir(), 'vege_area', 'vege_area.shp'),
             ped = file.path(tempdir(),'GEOFT_UNIDADE_CONSERVACAO.shp'),
             geom =file.path(tempdir(), 'geom_area.shp'))
+  if(var != 'veg'& var != 'ped' & var !='geom' & var != 'area'){
+    stop('Variável inválida')
+  }
   if(file.exists(path['area']) == F) {
     download.data(url['area'])
   }
   if(var=='area') {
     uc <- sf::st_read(path['area'])
+    if(id %in% uc$ID_UC0 == F){
+      stop('ID não encontrado')
+    }
     return(uc$geometry[uc$ID_UC0 == id])
   }
   else if(var == 'veg'| var == 'ped'|var =='geom'){
