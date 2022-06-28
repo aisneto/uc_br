@@ -46,4 +46,3 @@ read.uc <-  function(id, var){
     return(int['legenda'])
   }
 }
-
